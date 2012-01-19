@@ -47,7 +47,7 @@ A RedisDB object can be used like an ordinary Python dictionary object.
     >>> rdb.keys()
     ['key1', 'key2', 'key3']
 
-### Clear
+#### Clear
 
 Be careful, this deletes all keys from the current database.
 
