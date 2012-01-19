@@ -2,7 +2,6 @@ from UserDict import DictMixin
 
 import redis
 
-
 # exception to be raise, when invalid data types are tried to be set
 class InvalidDataType(Exception): pass
 
@@ -38,27 +37,31 @@ class RedisDB(DictMixin):
             self.redis.set(key, value)
 
         # list can be set, only containing str or int
-        elif isinstance(value, list) and all([isinstance(i, str) or isinstance(i, int) for i in value]):
+        elif isinstance(value, list):
+            if not all([isinstance(i, str) or isinstance(i, int) for i in value]):
+                raise InvalidDataType, "lists can only contain values of type str or int"
+
             if key in self: del self[key]
             for i in value: self.redis.rpush(key, i)
 
         # sets can be set, only containing str or int
-        elif isinstance(value, set) and all([isinstance(i, str) or isinstance(i, int) for i in value]):
+        elif isinstance(value, set):
+            if not all([isinstance(i, str) or isinstance(i, int) for i in value]):
+                raise InvalidDataType, "sets can only contain values of type str or int"
+
             if key in self: del self[key]
             for i in value: self.redis.sadd(key, i)
 
         # dicts can be set, only containing str keys and str or int values
-        elif isinstance(value, dict) and all([isinstance(i, str) or isinstance(i, int) for i in value.values()]) and all([isinstance(i, str) for i in value.keys()]):
+        elif isinstance(value, dict):
+            if not all([isinstance(i, str) or isinstance(i, int) for i in value.values()]) or not all([isinstance(i, str) for i in value.keys()]):
+                raise InvalidDataType, "dicts can only contain keys of type str and values of type str or int"
+
             if key in self: del self[key]
             self.redis.hmset(key, value)
-
         # if none of the above, raise error
         else:
-            raise InvalidDataType, "value needs to be of type str, \
-                                    int, \
-                                    a list containing str or int, \
-                                    a set containing str or int or \
-                                    a dict containing str or int"
+            raise InvalidDataType, "value needs to be of type str, int, set, list or dict"
 
 
     def __getitem__(self, key):
@@ -71,7 +74,7 @@ class RedisDB(DictMixin):
 
         # if key does not exist, raise KeyError
         if not self.redis.exists(key):
-            raise KeyError
+            raise KeyError, "Key '%s' does not exist" % key
 
         value_type = self.redis.type(key)
 

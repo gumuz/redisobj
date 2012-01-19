@@ -126,6 +126,9 @@ class TestRedisDB(unittest.TestCase):
         def get_key(key): return self.rdb[key]
         def del_key(key): del self.rdb[key]
 
+        # invalid value data type
+        self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", 1.5)
+
         # invalid key data type
         self.assertRaises(redisobj.InvalidDataType, set_key, 1, "test")
         self.assertRaises(redisobj.InvalidDataType, get_key, 1)
@@ -136,7 +139,10 @@ class TestRedisDB(unittest.TestCase):
         self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", [1,2,set([])])
         self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", [1,2,{}])
 
-        # invalid sets hash type
+        # invalid sets data type
+        self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", set([1,2,1.5]))
+
+        # invalid hash data type
         self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", {1:'a'})
         self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", {1:['a']})
         self.assertRaises(redisobj.InvalidDataType, set_key, "valid_key", {1:{'a':2}})
