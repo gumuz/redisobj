@@ -80,15 +80,14 @@ class RedisDB(DictMixin):
 
         # use appropriate redis getter function, te retrieve values
         if value_type == 'string':
-            value = self.redis.get(key)
+            return self.redis.get(key)
         elif value_type == 'list':
-            value = self.redis.lrange(key, 0, -1)
+            return self.redis.lrange(key, 0, -1)
         elif value_type == 'set':
-            value = self.redis.smembers(key)
+            return self.redis.smembers(key)
         elif value_type == 'hash':
-            value = self.redis.hgetall(key)
+            return self.redis.hgetall(key)
 
-        return value
 
     def __delitem__(self, key):
         """
@@ -99,7 +98,7 @@ class RedisDB(DictMixin):
             raise InvalidDataType, "key needs to be of type str"
 
         # perform getitem, to trigger KeyError if needed
-        self.__getitem__(key) and self.redis.delete(key)
+        return self.__getitem__(key) and self.redis.delete(key)
 
 
     def __contains__(self, key):
