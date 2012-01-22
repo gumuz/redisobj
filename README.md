@@ -1,11 +1,14 @@
 Redis Object
 ============
 
+About
+-----
+
 A Python dictionary-like interface to a [Redis](http://redis.io/) database, implementing all methods provided by the
 [UserDict](http://docs.python.org/library/userdict.html) mixin.
 
 **caution**: This is intended for an interactive shell environment, not as a library to interface
-with your production Redis database.
+with your production Redis database. You should probably use [redis-py](https://github.com/andymccurdy/redis-py) for that.
 
 Dependencies
 ------------
@@ -117,3 +120,7 @@ always be strings.
     >>> rdb["my_hash"]
     {'a':'2','b':'c'}
 
+### Future Features
+
+Currently, all operations work on the DB level. Future addition could include bound datatypes, where operations on the
+values themselves will be translated to redis commands, directly altering the values in the DB.
